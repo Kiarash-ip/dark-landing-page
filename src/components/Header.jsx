@@ -6,10 +6,17 @@ function scale(number, inMin, inMax, outMin, outMax) {
   return ((number - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
 
+function getPercentageIncrease(numA, numB) {
+  return ((numA - numB) / numB) * 100;
+}
+
 export default function Header() {
   const containerRef = useRef(null);
+  const backgroundRef = useRef();
   const [scrollTop, setScrollTop] = useState(0);
   const [scrollTopPrev, setScrollTopPrev] = useState(0);
+  const [scrollPercentage, setScrollPercentage] = useState(0);
+  const [translateXState, setTranslateXState] = useState(0);
   const [right, setRight] = useState(0);
   const { scrollYProgress } = useScroll({
     container: containerRef,
@@ -27,8 +34,44 @@ export default function Header() {
   });
 
   useEffect(() => {
-    console.log(scrollTop);
-  });
+    setScrollPercentage(
+      -(
+        getPercentageIncrease(
+          backgroundRef.current?.getBoundingClientRect().width -
+            window.innerWidth,
+          backgroundRef.current?.getBoundingClientRect().width
+        ) + 100
+      )
+    );
+
+    console.log(
+      -(
+        getPercentageIncrease(
+          backgroundRef.current?.getBoundingClientRect().width -
+            window.innerWidth,
+          backgroundRef.current?.getBoundingClientRect().width
+        ) + 100
+      )
+    );
+  }, []);
+
+  useEffect(() => {
+    setTranslateXState(
+      scale(
+        scrollTop,
+        0,
+        1,
+        0,
+        getPercentageIncrease(
+          backgroundRef.current?.getBoundingClientRect().width -
+            window.innerWidth,
+          backgroundRef.current?.getBoundingClientRect().width
+        )
+      )
+    );
+    // console.log(window.innerWidth);
+    // console.log(backgroundRef.current.getBoundingClientRect().width);
+  }, [scrollTop]);
 
   return (
     <div ref={containerRef} className="header">
@@ -40,7 +83,7 @@ export default function Header() {
           }%)`,
         }}
       >
-        <img
+        {/* <img
           src="/public/images/minecraft_nether.png"
           className="header__top--gradient"
           style={{
@@ -55,14 +98,19 @@ export default function Header() {
           style={{
             transform: `translateX(${scale(scrollTop, 0, 0.8, 100, -100)}%)`,
           }}
-        />
-        <img
-          src="/public/images/minecraft_snow.png"
-          className="header__mountains__img"
-          style={{
-            transform: `translateX(${scale(scrollTop, 0, 0.4, 0, -100)}%)`,
-          }}
-        />
+        /> */}
+        <animated.div className="background__container">
+          <img
+            ref={backgroundRef}
+            src="/public/images/background.jpg"
+            className="header__mountains__img"
+            style={{
+              transform: `translateX(${
+                translateXState > -33 ? translateXState : -33
+              }%)`,
+            }}
+          />
+        </animated.div>
         <animated.div
           className="animated__ghost"
           style={{
