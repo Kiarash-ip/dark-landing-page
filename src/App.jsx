@@ -1,18 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import Header from "./components/Header";
-import Navigation from "./components/Navigation";
-import SectionOne from "./components/SectionOne";
 
 function App() {
   return (
     <div
       style={{
         height: "100%",
+        width: "100%",
       }}
     >
-      <Navigation />
       <Header />
-      {/* <SectionOne /> */}
     </div>
   );
 }
